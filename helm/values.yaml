@@ -1,0 +1,43 @@
+# Default settings. values-dev.yaml / values-staging.yaml / values-prod.yaml override them,
+# and CI overrides image.repository and image.tag with --set.
+
+# Name of the Deployment, Service and HTTPRoute. Other services reach auth-service by it.
+name: auth-service
+
+replicaCount: 1   # keep 1 until the signing key comes from a Secret
+
+image:
+  repository: auth-service          # CI: <dockerhub-user>/horica-auth-service
+  tag: dev                          # CI: the commit SHA
+  pullPolicy: IfNotPresent
+
+port: 8081
+
+# "local" = in-memory H2 (no database needed), "docker" = PostgreSQL from database.secretName.
+springProfile: docker
+
+# Token issuer = the address other services use to reach auth-service (Service name + port).
+issuer: http://auth-service:8081
+
+cors:
+  # Empty: CORS off. Correct behind the Gateway, where the UI and the API share one address.
+  # Only list origins if a browser app on another address must call auth-service directly.
+  allowedOrigins: []
+
+database:
+  # Secret with keys DB_URL, DB_USER, DB_PASSWORD. Created by hand per namespace
+  # (see horica-deploy/README.md). Not used when springProfile is "local".
+  secretName: db-auth
+
+route:
+  enabled: true
+  gateway: horica-gateway   # the Gateway in the same namespace
+  pathPrefix: /api/auth     # what the browser calls ...
+  rewritePrefix: /auth      # ... and what auth-service receives
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 384Mi
+  limits:
+    memory: 512Mi

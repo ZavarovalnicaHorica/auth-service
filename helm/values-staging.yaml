@@ -1,0 +1,5 @@
+# AKS, namespace "staging": deployed automatically on every push to main.
+# Database: Azure PostgreSQL, database auth_staging (Secret db-auth in namespace staging).
+springProfile: docker
+image:
+  pullPolicy: IfNotPresent   # tags are commit SHAs, so a tag never changes

@@ -1,0 +1,5 @@
+# Local cluster (minikube / kind): image built and loaded locally, in-memory H2 database.
+image:
+  repository: auth-service
+  tag: dev
+springProfile: local

@@ -1,0 +1,11 @@
+# AKS, namespace "prod": deployed by a manual workflow run, with the image already tested in staging.
+# Database: Azure PostgreSQL, database auth_prod (Secret db-auth in namespace prod).
+springProfile: docker
+image:
+  pullPolicy: IfNotPresent
+resources:
+  requests:
+    cpu: 200m
+    memory: 384Mi
+  limits:
+    memory: 512Mi

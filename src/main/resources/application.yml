@@ -1,0 +1,44 @@
+# Settings shared by every environment.
+# Environment-specific settings live in application-<profile>.yml.
+
+spring:
+  application:
+    name: auth-service
+  profiles:
+    # Used when no profile is chosen (plain ./mvnw spring-boot:run, and tests).
+    # Docker/Kubernetes override this with SPRING_PROFILES_ACTIVE=docker.
+    default: local
+  jpa:
+    hibernate:
+      ddl-auto: validate   # Flyway creates tables; Hibernate only checks the entities match
+    open-in-view: false    # close the DB connection when the service method ends
+  flyway:
+    locations: classpath:db/migration
+
+server:
+  port: 8081
+
+# Our own settings, read by security/AuthProperties.java
+auth:
+  jwt:
+    # The URL other services use to reach auth-service. Goes into every token ("iss") and
+    # into the discovery document; .NET services set Authority to exactly this value.
+    issuer: http://localhost:8081
+    access-token-ttl: 15m
+  cors:
+    allowed-origins:
+      - http://localhost:5173   # web-ui (Vite dev server)
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      probes:
+        enabled: true      # adds /actuator/health/liveness and /readiness for Kubernetes
